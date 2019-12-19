@@ -5,6 +5,7 @@ import os
 
 def main():
 
+    print("Accessing Config")
     config = ConfigParser()
 
     # Try to find the config file, if it does not exist, create one.
@@ -19,13 +20,12 @@ def main():
         exit(0)
 
     config.read('config.ini')
-
     username = config['TWITCH_BOT_SETTINGS']['username']
     token = config['TWITCH_BOT_SETTINGS']['token']
     client_id = config['TWITCH_BOT_SETTINGS']['client_id']
     channel_limit = config['TWITCH_BOT_SETTINGS'].getint('channel_limit')
 
-
+    print("Initializing Bot")
     # Initialize bot.
     bot = TwitchBot(username=username,
                     token=token,

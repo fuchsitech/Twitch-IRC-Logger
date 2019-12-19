@@ -3,7 +3,7 @@ import time
 import requests
 from codecs import decode
 import os
-
+import Channels
 import logging
 import logging.handlers
 
@@ -63,7 +63,7 @@ class TwitchBot(object):
         self.limit = limit
 
         # Get an initial list of streams.
-        self.channel_list = self.__get_top_streamers()
+        self.channel_list = Channels.channels
 
         # Connect to the Twitch IRC.
         self.__connect()
@@ -106,66 +106,6 @@ class TwitchBot(object):
 
         self.sock_connection.send('PART {}\n'.format(channel).encode('utf-8'))
 
-    def __update(self):
-        """
-        Updates which channels we're logging. Fetches a new list of
-        streams from __get_top_streamers() and compares it with our current
-        list of streams. Compares the lists to get which streams have
-        entered/left the top 100. Calls __leave_channel/__join_channel on
-        these lists as needed.
-
-        :return: None
-        """
-
-        new_channels = self.__get_top_streamers()
-        old_channels = self.channel_list
-
-        # Compares the stream lists to find which streams to join/leave.
-        channels_to_leave = list(set(old_channels) - set(new_channels))
-        channels_to_join = list(set(new_channels) - set(old_channels))
-
-        # Leave streams in not in top 100
-        for channel in channels_to_leave:
-
-            self.__leave_channel(channel)
-
-        # Join streams new to the top 100
-        for channel in channels_to_join:
-
-            self.__join_channel(channel)
-
-        # Update the list of channels we're currently in.
-        self.channel_list = new_channels
-
-    def __get_top_streamers(self):
-        """
-        Gets the 100 channels with the most current viewers. Uses the param
-        settings from initialization (self.game, self.limit) to determine
-        which and how many streams to grab.
-
-        :return: A list of channels in the top *self.limit* system currently.
-        """
-
-        # Parameters for the Twitch API request
-        twitch_api_params = {
-            'client_id': self.client_id,    # Required
-            'api_version': 5,               # Required
-            'game': self.game,              # Optional
-            'limit': self.limit             # Optional, defaults to 25. Max is 100.
-        }
-
-        names = []
-
-        # Request the JSON data from twitch.
-        channel_list = requests.get('https://api.twitch.tv/kraken/streams/',
-                                    params=twitch_api_params).json()
-
-        # Extract channel names from the JSON data.
-        for name in channel_list['streams']:
-            names.append(name['channel']['name'])
-
-        return names
-
     def __close_connection(self):
         """
         Close our socket connection.
@@ -192,13 +132,12 @@ class TwitchBot(object):
         :param response: A single message response from the server.
         :return:
         """
-
         # Send a PONG if the server sends a PING
         if response.startswith('PING'):
 
             self.sock_connection.send('PONG\n'.encode('utf-8'))
 
-        elif len(response) > 0 and self.username not in response:
+        elif len(response) > 0 and self.username not in response and not response.startswith(":tmi.twitch.tv"):
 
             logging.info(response.rstrip('\r\r\n'))
 
@@ -210,7 +149,6 @@ class TwitchBot(object):
         """
 
         # A flag used to determine if it'stime to call __update().
-        top_100_check = time.time()
 
         while True:
 
@@ -238,7 +176,6 @@ class TwitchBot(object):
                 # them this way.
 
                 line_count = response.count("\r\n")
-
                 if line_count > 1:
 
                     messages = response.split("\r\n")
@@ -250,16 +187,6 @@ class TwitchBot(object):
                 else:
 
                     self.__log_message(response)
-
-                # Check if the time now is more than the refresh_interval + the
-                # last time we checked the top 100.
-                if time.time() > top_100_check + self.refresh_interval:
-
-                    # Update the time we last checked to now.
-                    top_100_check = time.time()
-
-                    # Update our channel list.
-                    self.__update()
 
             # Shut down 'gracefully' on keyboard interrupt.
             except KeyboardInterrupt:
