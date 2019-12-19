@@ -1,7 +1,7 @@
 <h1 align="center">Twitch IRC Logger</h1>
 
 <div align="center">
-    A configurable <code>Python 3</code> bot which logs chat messages in the Twitch channels with the highest viewers.
+    A configurable <code>Python 3</code> bot which logs chat messages on twitch channels that are manually set.Forked from disabledtech/Twitch-IRC-Logger
 </div>
 
 <br/>
