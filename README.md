@@ -17,7 +17,7 @@
 - [Prerequisites](#prerequisites)
 - [Usage](#usage)
 - [Example](#example)
-- [Support](#support)
+- [ToDo](#TODO)
 
 
 
@@ -83,13 +83,12 @@ This will join the top *10* streamers with the name *john_logger_bot999*.
 
 ---
 
-## Support
+## TODO
 
-Reach out to me at one of the following places if you need help!
-
-- Reddit at <a href="https://www.reddit.com/user/AntiHydrogen" target="_blank">`/u/AntiHydrogen`</a>
-- Github at <a href="https://github.com/disabledtech" target="_blank">`disabledtech`</a>
-
+- Create individual file for each channel logged
+- Access Meta Information about streams
+- Parse Logged Messages to useful format
+- Upload Messages and Meta Information to PostgreSQL Database
 
 ---
 
