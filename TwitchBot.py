@@ -61,7 +61,7 @@ class TwitchBot(object):
         self.limit = limit
 
         # Get an initial list of streams.
-        self.channel_list = Channels.channels
+        self.channel_list = Settings.channels
 
         # Connect to the Twitch IRC.
         self.__connect()

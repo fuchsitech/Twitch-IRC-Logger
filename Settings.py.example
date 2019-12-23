@@ -1,6 +1,3 @@
-username = ""
-token = "oauth:"
-client_id = ""
-channel_limit = 25
+bot = {"username": "bot_account", "token": "oauth:", "client_id": "", "channel_limit": 25}
 channels = ['sodapoppin', 'summit1g']
 db = {"database": "database", "host": "host", "user": "user", "password": "password"}

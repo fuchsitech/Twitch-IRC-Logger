@@ -2,11 +2,12 @@ from TwitchBot import TwitchBot
 import Settings
 
 def main():
+    bot_account = Settings.bot
 
-    username = Settings.username
-    token = Settings.token
-    client_id = Settings.client_id
-    channel_limit = Settings.channel_limit
+    username = bot_account["username"]
+    token = bot_account["token"]
+    client_id = bot_account["client_id"]
+    channel_limit = bot_account["channel_limit"]
 
     print("Initializing Bot")
     # Initialize bot.
