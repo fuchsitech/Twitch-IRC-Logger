@@ -29,7 +29,6 @@ logging.basicConfig(level=logging.DEBUG,
                                                                         interval=10,  # Log rotation in min.
                                                                         encoding='utf-8')])
 
-
 class TwitchBot(object):
     """
     A bot which joins multiple Twitch IRC channels and records
