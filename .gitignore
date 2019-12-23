@@ -1,5 +1,5 @@
 venv/
 .idea/
 /config.ini
-/Channels.py
+/Settings.py
 logs/

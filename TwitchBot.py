@@ -1,9 +1,8 @@
 import socket
 import time
-import requests
 from codecs import decode
 import os
-import Channels
+import Settings
 import logging
 import logging.handlers
 
