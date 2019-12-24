@@ -9,7 +9,6 @@ def main():
     client_id = bot_account["client_id"]
     channel_limit = bot_account["channel_limit"]
 
-    print("Initializing Bot")
     # Initialize bot.
     bot = TwitchBot(username=username,
                     token=token,

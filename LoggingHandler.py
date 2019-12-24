@@ -6,55 +6,34 @@ import Settings
 class psqlHandler(logging.Handler):
 
     initial_sql = """CREATE TABLE IF NOT EXISTS log(
-                        Created text,
-                        Name text,
-                        LogLevel int,
-                        LogLevelName text,
-                        Message text,
-                        Args text,
-                        Module text,
-                        FuncName text,
-                        LineNo int,
-                        Exception text,
-                        Process int,
-                        Thread text,
-                        ThreadName text
+                        msg_id int,
+                        channel text,
+                        user text,
+                        message text,
+                        timestamp text
                    )"""
 
     insertion_sql = """INSERT INTO log(
-                            Created,
-                            Name,
-                            LogLevel,
-                            LogLevelName,
-                            Message,
-                            Module,
-                            FuncName,
-                            LineNo,
-                            Exception,
-                            Process,
-                            Thread,
-                            ThreadName) VALUES (
-                            %(created)s,
-                            %(name)s,
-                            %(levelno)s,
-                            %(levelname)s,
-                            %(msg)s,
-                            %(module)s,
-                            %(funcName)s,
-                            %(lineno)s,
-                            %(exc_text)s,
-                            %(process)s,
-                            %(thread)s,
-                            %(threadName)s
-                    );"""
+                            msg_id,
+                            channel,
+                            user,
+                            message,
+                            timestamp)
+                            VALUES (
+                            %(msg_id)s,
+                            %(channel)s,
+                            %(user)s,
+                            %(message)s,
+                            %(timestamp)s
+                    )"""
 
     def connect(self):
         try:
             self.__connect = psycopg2.connect(
                 database=self.__database,
-                host = self.__host,
-                user = self.__user,
-                password = self.__password,
+                host=self.__host,
+                user=self.__user,
+                password=self.__password,
                 sslmode="disable")
 
             return True
@@ -72,7 +51,7 @@ class psqlHandler(logging.Handler):
         self.__connect = None
 
         if not self.connect():
-            raise Exception ("Database connection error, no logging ☻")
+            raise ConnectionError
 
         logging.Handler.__init__(self)
 
@@ -101,15 +80,3 @@ class psqlHandler(logging.Handler):
 
         self.__connect.commit()
         self.__connect.cursor().close()
-if __name__ == "__main__":
-
-    myh = psqlHandler({'host':"localhost", 'user':"test",
-                       'password':"testpw", 'database':"test"})
-
-    l = logging.getLogger("TEST")
-    l.setLevel(logging.DEBUG)
-    l.addHandler(myh)
-
-
-    for i in xrange(1):
-        l.info("test%i"%i)

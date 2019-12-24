@@ -5,6 +5,23 @@ import os
 import Settings
 import logging
 import logging.handlers
+import LoggingHandler
+
+# Try to connect to DB, otherwise use file handler
+try:
+    log_handler = LoggingHandler.psqlHandler()
+    print("Logging to Database now")
+except ConnectionError:
+    print("Couldn't connect to DB, switching to File Handler")
+    # Where logs will be stored.
+    logs_folder = os.path.join(os.getcwd(), 'logs/')
+    # Make the folder if it does not exist.
+    if not os.path.exists(logs_folder):
+        os.mkdir(logs_folder)
+    log_handler = logging.handlers.TimedRotatingFileHandler(logs_folder + 'chat.log',  # Active log name
+                                                    when='M',
+                                                    interval=10,  # Log rotation in min.
+                                                    encoding='utf-8')
 
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 logging.getLogger("requests").setLevel(logging.WARNING)
@@ -12,21 +29,13 @@ logging.getLogger("requests").setLevel(logging.WARNING)
 # Set our logger's time format to UTC
 logging.Formatter.converter = time.gmtime
 
-# Where logs will be stored.
-logs_folder = os.path.join(os.getcwd(), 'logs/')
 
-# Make the folder if it does not exist.
-if not os.path.exists(logs_folder):
-    os.mkdir(logs_folder)
 
 # Set up the logger. Log files will rotated saved every 10 minutes.
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s — %(message)s',
                     datefmt='%Y-%m-%d_%H:%M:%S',
-                    handlers=[logging.handlers.TimedRotatingFileHandler(logs_folder + 'chat.log',   # Active log name
-                                                                        when='M',
-                                                                        interval=10,  # Log rotation in min.
-                                                                        encoding='utf-8')])
+                    handlers=[log_handler])
 
 class TwitchBot(object):
     """
