@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import socket
 import time
 from codecs import decode
@@ -6,12 +7,27 @@ import Settings
 import logging
 import logging.handlers
 import LoggingHandler
+import requests
+import re
+from datetime import datetime
 
 # Try to connect to DB, otherwise use file handler
 try:
-    log_handler = LoggingHandler.psqlHandler()
-    print("Logging to Database now")
-except ConnectionError:
+    table_name = "chat"
+    con = LoggingHandler.psqlHandler()
+    cur = con.cursor()
+    print("Logging to Database now using " + str(cur))
+    db = True
+    # Check if Table exists
+    #cur.execute("select exists(select * from information_schema.tables where table_name=%s)", (table_name,))
+    #table_exists = cur.fetchone()[0]
+    #if not table_exists:
+        # Create Table
+    #    pass
+        #print("Creating Table")
+        #print(cur.execute("CREATE TABLE table_name (msg_id serial PRIMARY KEY,channel text,user_name text,message text,msg_timestamp text);"))
+
+except Exception:
     print("Couldn't connect to DB, switching to File Handler")
     # Where logs will be stored.
     logs_folder = os.path.join(os.getcwd(), 'logs/')
@@ -22,20 +38,16 @@ except ConnectionError:
                                                     when='M',
                                                     interval=10,  # Log rotation in min.
                                                     encoding='utf-8')
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    logging.getLogger("requests").setLevel(logging.WARNING)
 
-logging.getLogger("urllib3").setLevel(logging.WARNING)
-logging.getLogger("requests").setLevel(logging.WARNING)
+    # Set our logger's time format to UTC
+    logging.Formatter.converter = time.gmtime
 
-# Set our logger's time format to UTC
-logging.Formatter.converter = time.gmtime
+    # Set up the logger. Log files will rotated saved every 10 minutes.
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s — %(message)s', datefmt='%Y-%m-%d_%H:%M:%S', handlers=[log_handler])
+    db = False
 
-
-
-# Set up the logger. Log files will rotated saved every 10 minutes.
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s — %(message)s',
-                    datefmt='%Y-%m-%d_%H:%M:%S',
-                    handlers=[log_handler])
 
 class TwitchBot(object):
     """
@@ -146,12 +158,26 @@ class TwitchBot(object):
 
         elif len(response) > 0 and self.username not in response and not response.startswith(":tmi.twitch.tv"):
 
-            logging.info(response.rstrip('\r\r\n'))
+            if db:
+                msg = response.rstrip('\r\r\n')
+                #print(msg)
+                username_message = msg.split('.tmi.twitch.tv')
+                username = username_message[0].split('@')[1]
+
+                channel_and_message = str(username_message[1]).split('#', 1)[1].split(' :', 1)
+                channel = channel_and_message[0]
+                message = channel_and_message[1]
+                timestamp = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+                #print(channel + ": " + username + ": " + message + ": " + timestamp)
+
+                cur.execute("""INSERT INTO chat (channel, msg_user, message, msg_timestamp) VALUES (%s, %s, %s, %s);""",(channel, username, message, timestamp))
+                con.commit()
+            else:
+                logging.info(response.rstrip('\r\r\n'))
 
     def run(self):
         """
         Run the script until user interruption.
-
         :return: None
         """
 
