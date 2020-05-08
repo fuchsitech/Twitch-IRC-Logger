@@ -1,7 +1,9 @@
 <h1 align="center">Twitch IRC Logger</h1>
 
 <div align="center">
-    A configurable <code>Python 3</code> bot which logs chat messages on twitch channels that are manually set.Forked from disabledtech/Twitch-IRC-Logger
+    A configurable <code>Python 3</code> bot which logs chat messages on twitch channels that are manually set.
+    <br>I forked the original from disabledtech and added a way to store the data in a PSQL Database.
+    <br>I also changed the Streamer-List to manual entry in the Settings, instead of fetching the most watched streams. 
 </div>
 
 <br/>
@@ -19,19 +21,17 @@
 - [Example](#example)
 - [ToDo](#TODO)
 
-
-
 ---
 
 ## Prerequisites
-
 <br/>
-
 - Python 3.5 or newer.
 
 - <a href="https://pypi.org/project/requests/" target="_blank">Requests</a> is used to get data on the most popular streamers online right now.
+- <a href="https://pypi.org/project/psycopg2/" target="_blank">Psycopg2</a> is used to push the data into a preconfigured PSQL Database
 ```
 pip install requests
+pip install psycopg2
 ```
 
 ---
@@ -64,39 +64,25 @@ Fill out the settings in ```config.ini``` and then run ```run_bot.py```. Log fil
         <td><strong>channel_limit</strong></td>
         <td>The number of IRC channels to join. Ex. If set to 20 the bot will join and log the 20 channels with the most viewers. <i>Max</i>: 100</td>
     </tr>
+    <tr>
+        <td><strong>channels</strong></td>
+        <td>List of all Streams the Bot should join.</td>
+    </tr>
+    <tr>
+        <td><strong>db</strong></td>
+        <td>All required information to connect to the database</td>
+    </tr>
 </table>
 <br/>
 
----
-
-## Example config.ini
-
-This will join the top *10* streamers with the name *john_logger_bot999*.
-
-`config.ini`
-
-
-`username   = john_logger_bot999` <br/>
-`token      = oauth:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` <br/>
-`client_id  = xxxxxxxxxxxxxxxxxxxxxxxxxxx` <br/>
-`channel_limit = 10` <br/>
-
----
-
 ## TODO
 
-- Create individual file for each channel logged
-- Access Meta Information about streams
-- Parse Logged Messages to useful format
-- Upload Messages and Meta Information to PostgreSQL Database
-
+- ?
 ---
 
 ## License
 
 MIT License
-
-Copyright (c) 2019 disabledtech
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -193,7 +193,6 @@ class TwitchBot(object):
                     response = decode(self.sock_connection.recv(2048), encoding='utf-8')
 
                 except UnicodeDecodeError:
-                    # TODO Handle this better
                     # Sometimes this exception is raised, however it happens extremely
                     # rarely (< ~0.1%) and is not significant unless it is absolutely critical
                     # you do not miss anything. At the moment we simply skip over these errors.
