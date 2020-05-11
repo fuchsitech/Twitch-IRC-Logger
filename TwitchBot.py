@@ -168,18 +168,17 @@ class TwitchBot(object):
                     print(
                         "Crashed at Username Split with: " + username_message[
                             0])
-                    channel_and_message = \
-                    str(username_message[1]).split('#', 1)[1].split(' :', 1)
-                    channel = channel_and_message[0]
-                    message = channel_and_message[1]
-                    timestamp = datetime.fromtimestamp(time.time()).strftime(
-                        '%Y-%m-%d %H:%M:%S')
-                    # print(channel + ": " + username + ": " + message + ": " + timestamp)
+                    username = "Error404"
+                channel_and_message = \
+                str(username_message[1]).split('#', 1)[1].split(' :', 1)
+                channel = channel_and_message[0]
+                message = channel_and_message[1]
+                timestamp = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+                #print(channel + ": " + username + ": " + message + ": " + timestamp)
 
-                    cur.execute(
-                        """INSERT INTO chat (channel, msg_user, message, msg_timestamp) VALUES (%s, %s, %s, %s);""",
-                        (channel, username, message, timestamp))
-                    con.commit()
+                cur.execute(
+                    """INSERT INTO chat (channel, msg_user, message, msg_timestamp) VALUES (%s, %s, %s, %s);""",(channel, username, message, timestamp))
+                con.commit()
 
             else:
                 logging.info(response.rstrip('\r\r\n'))
